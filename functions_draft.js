@@ -1,3 +1,27 @@
+/** Routes */
+app.post("/tofirebase", async (req, res) => {
+  //   Create a new collection and a document
+  const docRef = db.collection("notifications_from_mongodb").doc("doc_title");
+  try {
+    Collection.find().then((docs) => {
+      console.log(docs);
+      var toStore = [];
+      docs.forEach((el) => {
+        toStore.push(_.pick(el["_data"], ["user", "action"]));
+      });
+      console.log(toStore);
+      docRef.set({ ...toStore });
+      res.status(201).json({
+        ack: "Awesome, Successfully Added To Firestore !",
+        data: { ...toStore },
+      });
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+/** Routes */
+
 // This function is used to generate a JWT that contains the user informations
 // and that can be trusted across all our vuejs apps: moncompte, marketplace, inventaire.
 app.post("/authenticateWithAD", async (req, res) => {

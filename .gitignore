@@ -4,3 +4,5 @@ services/
 store.js
 moncompte-mb-staging-firebase-adminsdk-xaahw-e9b9706173.json
 app-mon-compte-dev-firebase-adminsdk-bazos-1dc8da4864.json
+.env
+functions_draft.js

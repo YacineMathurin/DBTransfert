@@ -8,24 +8,34 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
 const store = require("./store.js");
-const auth = require("./middlewares/auth");
 const password = store.password;
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 
+if (!process.env.MONGO_IMAGE_IP || !process.env.DB_NAME) {
+  console.error("MONGO_IMAGE_IP and DB_NAME should all be set as .env variables");
+  process.exit(1);
+}
+
 /** Connection to MongoDB */
 mongoose
   .connect(
+    // To connect to a cluster
     // `mongodb+srv://admin:${password}@cluster0.pjomp.mongodb.net/firestore_mongodb`,
-    `mongodb://localhost:27017/blachere`,
-    // `mongodb://192.168.99.100:27017/blachere`,
+    // To connect to local MongoDB
+    // `mongodb://localhost:27017/blachere`,
+    // To connect to Containerized MongoDB, MONGO_IMAGE_IP and DB_NAME to 
+    // be configured in .env file at the root of the project
+    `mongodb://${process.env.MONGO_IMAGE_IP}:27017/${process.env.DB_NAME}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }
   )
-  .then(() => console.log("Mongoose Connected Successfully"))
+  .then(() => console.log("Mongoose Connected Successfully", process.env.MONGO_IMAGE_IP, process.env.DB_NAME))
   .catch((err) => console.error("Mongoose Connection failed"));
 
 /** Connection to Firabase */
@@ -40,34 +50,18 @@ admin.initializeApp({
 const db = admin.firestore();
 
 /** Model & Schema MongoDB */
-const Joining = mongoose.model(
-  "Users_Joining",
-  new mongoose.Schema({
-    result: [{}],
-  })
-);
-const Joining_obj = mongoose.model(
-  "users_packed",
+const Collection = mongoose.model(
+  "webhooks_packed",
   new mongoose.Schema({
     _id: String,
     _data: {},
   })
 );
+
 const Account = mongoose.model(
   "accounts",
   new mongoose.Schema({
     users: {},
-    _id: {
-      type: String,
-      minlength: 5,
-      maxlength: 1024,
-    },
-  })
-);
-const UsersPacked = mongoose.model(
-  "users_packeds",
-  new mongoose.Schema({
-    _data: {},
     _id: {
       type: String,
       minlength: 5,
@@ -118,6 +112,18 @@ const Auth = mongoose.model(
 
   })
 );
+
+const UsersPacked = mongoose.model(
+  "users_packeds",
+  new mongoose.Schema({
+    _data: {},
+    _id: {
+      type: String,
+      minlength: 5,
+      maxlength: 1024,
+    },
+  })
+);
 const Users = mongoose.model(
   "users",
   new mongoose.Schema({
@@ -154,29 +160,6 @@ const Users = mongoose.model(
     },
   })
 );
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 255,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 1024,
-  },
-  isAdmin: Boolean,
-});
-userSchema.methods.generateAuthToken = function () {
-  // We're dealing with classes here, so this works fine !
-  return jwt.sign(
-    { _id: this._id, isAdmin: this.isAdmin },
-    config.get("jwtPrivateKey")
-  );
-};
 /** Models */
 
 /** Functions */
@@ -184,14 +167,6 @@ function callbk() {
   console.log(
     "\nAwesome, Successfully Added To MongoDB ! \n\nwhat then please, I'm a callback !"
   );
-}
-
-function validateLogin(user) {
-  const schema = {
-    email: Joi.string().required().min(5).max(255).email(),
-    password: Joi.string().required().min(5).max(255),
-  };
-  return Joi.validate(user, schema);
 }
 /** Functions */
 
@@ -211,7 +186,7 @@ app.post("/tomongo", async (req, res) => {
 
   /* If ok, then transfert */
   try {
-    await Joining_obj.insertMany(result);
+    await Collection.insertMany(result);
     callbk();
     res
       .status(201)
@@ -259,29 +234,5 @@ app.post("/users", async (req, res) => {
   res.status(200).json({ res: response });
 });
 /** End Transfert to mongo */
-
-/** Routes */
-app.post("/tofirebase", async (req, res) => {
-  //   Create a new collection and a document
-  const docRef = db.collection("notifications_from_mongodb").doc("doc_title");
-  try {
-    Joining_obj.find().then((docs) => {
-      console.log(docs);
-      var toStore = [];
-      docs.forEach((el) => {
-        toStore.push(_.pick(el["_data"], ["user", "action"]));
-      });
-      console.log(toStore);
-      docRef.set({ ...toStore });
-      res.status(201).json({
-        ack: "Awesome, Successfully Added To Firestore !",
-        data: { ...toStore },
-      });
-    });
-  } catch (error) {
-    res.status(400).json({ error });
-  }
-});
-/** Routes */
 
 app.listen(5000, () => console.log("Listening on port ", 5000));
