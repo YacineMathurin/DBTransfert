@@ -27,10 +27,10 @@ mongoose
     // To connect to a cluster
     // `mongodb+srv://admin:${password}@cluster0.pjomp.mongodb.net/firestore_mongodb`,
     // To connect to local MongoDB
-    `mongodb://localhost:27017/blachere`,
+    // `mongodb://localhost:27017/blachere`,
     // To connect to Containerized MongoDB, MONGO_IMAGE_IP and DB_NAME to 
     // be configured in .env file at the root of the project
-    // `mongodb://${process.env.MONGO_IMAGE_IP}:27017/${process.env.DB_NAME}`,
+    `mongodb://${process.env.MONGO_IMAGE_IP}:27017/${process.env.DB_NAME}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
