@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const UsersPacked = mongoose.model(
-    "users_packeds",
+    "fusers",
     new mongoose.Schema({
         _data: {},
         _id: {

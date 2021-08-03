@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Collection = mongoose.model(
-    "FWebhooks",
+    "rolePermissions",
     new mongoose.Schema({
         _id: String,
         _data: {},

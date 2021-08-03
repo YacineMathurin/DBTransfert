@@ -36,7 +36,13 @@ mongoose
       useUnifiedTopology: true,
     }
   )
-  .then(() => console.log("Mongoose Connected Successfully", process.env.MONGO_IMAGE_IP, process.env.DB_NAME))
+  .then(() => {
+    if (process.env.MONGO_IMAGE_IP && process.env.DB_NAME)
+      console.log("Mongoose Connected Successfully to mongo docker", process.env.MONGO_IMAGE_IP, process.env.DB_NAME)
+    else
+      console.log("Mongoose Connected Successfully")
+  }
+  )
   .catch((err) => console.error("Mongoose Connection failed"));
 
 /** Connection to Firabase */
@@ -80,7 +86,7 @@ app.post("/tomongo", async (req, res) => {
     res.status(400).json({ error });
   }
 });
-app.post("/account", async (req, res) => {
+app.post("/formating/account", async (req, res) => {
   var accounts = await Account.find();
   // console.log(accounts[0]["users"]);
   // const response = await Account.insertMany(accounts[0]["users"]);
@@ -96,9 +102,9 @@ app.post("/account", async (req, res) => {
   //   _.pick(arr, ["email", "passwordHash"])
   // );
   // console.log(authResponse);
-  res.status(200).json({ res: "Cool !" });
+  res.status(201).json({ message: "Creation Succeded !" });
 });
-app.post("/users", async (req, res) => {
+app.post("/formating/users", async (req, res) => {
   var response = await UsersPacked.find();
   console.log("res", response);
   console.log(response[0]["_data"]);
@@ -115,7 +121,7 @@ app.post("/users", async (req, res) => {
   //   _.pick(arr, ["email", "passwordHash"])
   // );
   // console.log(authResponse); 
-  res.status(200).json({ res: response });
+  res.status(201).json({ message: "Creation Succeded !" });
 });
 
 /** Transfert to mongo */

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+/** Account is the raw imported data from Firebase */
 const Account = mongoose.model(
     "accounts",
     new mongoose.Schema({
@@ -11,6 +12,7 @@ const Account = mongoose.model(
         },
     })
 );
+/** Auth is the firebase's data like formated data */
 const Auth = mongoose.model(
     "auth",
     new mongoose.Schema({
