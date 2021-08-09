@@ -136,7 +136,7 @@ app.post("/permissions/tomongo", async (req, res) => {
     res.status(400).json({ error });
   }
 });
-app.post("/formating/account", async (req, res) => {
+app.post("/formating/accounts", async (req, res) => {
   var accounts = await Account.find();
   // console.log(accounts[0]["users"]);
   // const response = await Account.insertMany(accounts[0]["users"]);
