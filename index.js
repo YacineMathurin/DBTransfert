@@ -8,7 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 /** Model & Schema MongoDB */
-const { Collection } = require("./Models/collection");
+const { usersCollection, shopsCollection, rolePermissionsCollection } = require("./Models/collection");
 const { Account, Auth } = require("./Models/auth");
 const { UsersPacked, Users } = require("./Models/users");
 /** Models */
@@ -61,7 +61,7 @@ function callbk() {
 }
 
 /** Transfert to mongo */
-app.post("/tomongo", async (req, res) => {
+app.post("/users/tomongo", async (req, res) => {
   const { collection } = req.body;
   console.log("Transfert to mongo collection is: ", collection);
   const snapshot = await db.collection(collection).get();
@@ -76,7 +76,57 @@ app.post("/tomongo", async (req, res) => {
 
   /* If ok, then transfert */
   try {
-    await Collection.insertMany(result);
+    await usersCollection.insertMany(result);
+    callbk();
+    res
+      .status(201)
+      .json({ res: "Awesome, Successfully Added To MongoDB !", data: result });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error });
+  }
+});
+app.post("/shops/tomongo", async (req, res) => {
+  const { collection } = req.body;
+  console.log("Transfert to mongo collection is: ", collection);
+  const snapshot = await db.collection(collection).get();
+  let result = [];
+  snapshot.forEach((doc) => {
+    result.push({ _id: doc.id, _data: doc.data() });
+    /* In case not interested into some section, use _lodash */
+    /* result.push({ _id: doc.id, _data: _.pick(doc.data(), ["action", "user"]) }); */
+  });
+  /* Show first */
+  // res.json({ res: result });
+
+  /* If ok, then transfert */
+  try {
+    await shopsCollection.insertMany(result);
+    callbk();
+    res
+      .status(201)
+      .json({ res: "Awesome, Successfully Added To MongoDB !", data: result });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error });
+  }
+});
+app.post("/permissions/tomongo", async (req, res) => {
+  const { collection } = req.body;
+  console.log("Transfert to mongo collection is: ", collection);
+  const snapshot = await db.collection(collection).get();
+  let result = [];
+  snapshot.forEach((doc) => {
+    result.push({ _id: doc.id, _data: doc.data() });
+    /* In case not interested into some section, use _lodash */
+    /* result.push({ _id: doc.id, _data: _.pick(doc.data(), ["action", "user"]) }); */
+  });
+  /* Show first */
+  // res.json({ res: result });
+
+  /* If ok, then transfert */
+  try {
+    await rolePermissionsCollection.insertMany(result);
     callbk();
     res
       .status(201)
