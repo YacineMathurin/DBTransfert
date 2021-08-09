@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
-const UsersPacked = mongoose.model(
-    "fUsers",
-    new mongoose.Schema({
-        _data: {},
-        _id: {
-            type: String,
-            minlength: 5,
-            maxlength: 1024,
-        },
-    })
-);
+// const UsersPacked = mongoose.model(
+//     "fUsers",
+//     new mongoose.Schema({
+//         _data: {},
+//         _id: {
+//             type: String,
+//             minlength: 5,
+//             maxlength: 1024,
+//         },
+//     })
+// );
 const Users = mongoose.model(
     "users",
     new mongoose.Schema({
@@ -48,5 +48,5 @@ const Users = mongoose.model(
     })
 );
 
-exports.UsersPacked = UsersPacked;
+// exports.UsersPacked = UsersPacked;
 exports.Users = Users;

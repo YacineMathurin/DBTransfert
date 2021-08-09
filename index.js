@@ -10,7 +10,7 @@ dotenv.config();
 /** Model & Schema MongoDB */
 const { usersCollection, shopsCollection, rolePermissionsCollection } = require("./Models/collection");
 const { Account, Auth } = require("./Models/auth");
-const { UsersPacked, Users } = require("./Models/users");
+const { Users } = require("./Models/users");
 /** Models */
 
 const app = express();
@@ -155,7 +155,7 @@ app.post("/formating/account", async (req, res) => {
   res.status(201).json({ message: "Creation Succeded !" });
 });
 app.post("/formating/users", async (req, res) => {
-  var response = await UsersPacked.find();
+  var response = await usersCollection.find();
   console.log("res", response);
   console.log(response[0]["_data"]);
   // const response = await Account.insertMany(accounts[0]["users"]);
